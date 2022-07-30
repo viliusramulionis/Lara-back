@@ -1,4 +1,4 @@
-#Instaliacijos instrukcijos
+<h1>Instaliacijos instrukcijos</h1>
 
 Sukurkite pasirinktą duomenų bazę ir pervadinkite .env.example failą į .env
 Jame pakeiskite DB_ konfigūracijos eilutes prisijungimui prie mysql duomenų bazės.
