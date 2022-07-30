@@ -5,6 +5,6 @@
 <p>Paleiskite komandas:</p>
 <code>composer install</code><br />
 <code>php artisan:migrate</code><br />
-php artisan key:generate<br />
-php artisan passport:install<br />
-php artisan serve
+<code>php artisan key:generate</code><br />
+<code>php artisan passport:install</code><br />
+<code>php artisan serve</code>
