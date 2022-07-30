@@ -49,5 +49,6 @@ Route::delete('hotels/{id}', [HotelsController::class, 'destroy'])->middleware('
 
 Route::get('orders', [OrdersController::class, 'index'])->middleware('auth:api');
 Route::get('orders/all', [OrdersController::class, 'all'])->middleware('auth:api');
+Route::get('orders/{id}', [OrdersController::class, 'status'])->middleware('auth:api');
 Route::post('orders', [OrdersController::class, 'store'])->middleware('auth:api');
 Route::delete('orders/{id}', [OrdersController::class, 'destroy'])->middleware('auth:api');

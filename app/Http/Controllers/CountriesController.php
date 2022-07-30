@@ -125,18 +125,21 @@ class CountriesController extends Controller
                 'success' => false,
                 'message' => 'Unauthorized'
             ], 401);
+        
+        try {
+            $country = Countries::where('id', $id);
 
-        $country = Countries::where('id', $id);
-
-        if ($country->delete())
+            $country->delete();
+            
             return response()->json([
                 'success' => true,
                 'message' => 'Šalis sėkmingai ištrinta'
             ]);
-        else
+        } catch(\Illuminate\Database\QueryException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Nepavyko ištrinti šalies'
+                'message' => 'Šalis negali būti ištrinta, kadangi yra priskirta prie viešbučio'
             ], 500);
+        }
     }
 }

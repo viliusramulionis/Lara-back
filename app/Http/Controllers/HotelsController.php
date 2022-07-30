@@ -19,8 +19,12 @@ class HotelsController extends Controller
         $hotels = Hotels::all();
 
         foreach ($hotels as $hotel) {
-            $country = Countries::find($hotel->country_id);
-            $hotel->country = $country->name;
+            if($hotel->country_id) {
+                $country = Countries::find($hotel->country_id);
+                $hotel->country = $country->name;
+            } else {
+                $hotel->country = 'Nepasirinkta';
+            }
         }
 
         if ($hotels)
@@ -69,35 +73,35 @@ class HotelsController extends Controller
         $this->validate($request, [
             'name' => 'required',
             'price' => 'required',
-            'photo' => 'required',
-            'travel_duration' => 'required',
-            'country_id' => 'required'
+            'travel_duration' => 'required'
         ]);
         $hotel = new Hotels();
         $hotel->name = $request->name;
-        $hotel->price = $request->price;
+        $hotel->price = number_format($request->price, 2, '.');
         $hotel->travel_duration = $request->travel_duration;
-        if ($request->country_id !== '0')
+        if ($request->country_id) {
             $hotel->country_id = $request->country_id;
+        } else {
+            $hotel->country_id = null;
+        }
+        if($request->file('photo')) {
+            $uploadedFile = $request->file('photo');
+            $filename = time() . $uploadedFile->getClientOriginalName();
+            $filepath = str_replace(' ', '_', $filename);
+            $storage = Storage::disk('local')->putFileAs(
+                'public',
+                $uploadedFile,
+                $filepath
+            );
 
+            if (!$storage)
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Nepavyko išsaugoti viešbučio nuotraukos'
+                ], 500);
 
-        $uploadedFile = $request->file('photo');
-        $filename = time() . $uploadedFile->getClientOriginalName();
-        $filepath = str_replace(' ', '_', $filename);
-        $storage = Storage::disk('local')->putFileAs(
-            'public',
-            $uploadedFile,
-            $filepath
-        );
-
-        if (!$storage)
-            return response()->json([
-                'success' => false,
-                'message' => 'Nepavyko išsaugoti viešbučio nuotraukos'
-            ], 500);
-
-        $hotel->photo = '/storage/' . $filepath;
-
+            $hotel->photo = '/storage/' . $filepath;
+        }
         if ($hotel->save())
             return response()->json([
                 'success' => true,
@@ -129,39 +133,39 @@ class HotelsController extends Controller
         $this->validate($request, [
             'name' => 'required',
             'price' => 'required',
-            'photo' => 'required',
-            'travel_duration' => 'required',
-            'country_id' => 'required'
+            'travel_duration' => 'required'
         ]);
 
         $hotel = Hotels::find($id);
         $data = [];
 
         $data['name'] = $request->name;
-        $data['price'] = $request->price;
+        $data['price'] = number_format($request->price, 2, '.');
         $data['travel_duration'] = $request->travel_duration;
-
-        if ($request->country_id !== '0')
+        if ($request->country_id) {
             $data['country_id'] = $request->country_id;
+        } else {
+            $data['country_id'] = null;
+        }
 
+        if($request->file('photo')) {
+            $uploadedFile = $request->file('photo');
+            $filename = time() . $uploadedFile->getClientOriginalName();
+            $filepath = str_replace(' ', '_', $filename);
+            $storage = Storage::disk('local')->putFileAs(
+                'public',
+                $uploadedFile,
+                $filepath
+            );
 
-        $uploadedFile = $request->file('photo');
-        $filename = time() . $uploadedFile->getClientOriginalName();
-        $filepath = str_replace(' ', '_', $filename);
-        $storage = Storage::disk('local')->putFileAs(
-            'public',
-            $uploadedFile,
-            $filepath
-        );
+            if (!$storage)
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Nepavyko išsaugoti viešbučio nuotraukos'
+                ], 500);
 
-        if (!$storage)
-            return response()->json([
-                'success' => false,
-                'message' => 'Nepavyko išsaugoti viešbučio nuotraukos'
-            ], 500);
-
-        $data['photo'] = '/storage/' . $filepath;
-
+            $data['photo'] = '/storage/' . $filepath;
+        }
         if ($hotel->update($data))
             return response()->json([
                 'success' => true,

@@ -17,9 +17,9 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->float('price');
-            $table->string('photo');
+            $table->string('photo')->nullable();
             $table->string('travel_duration');
-            $table->unsignedBigInteger('country_id')->nullable();
+            $table->intger('country_id')->nullable()->unsigned();
             $table->foreign('country_id')->references('id')->on('countries');
             $table->timestamps();
         });

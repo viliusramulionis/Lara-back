@@ -11,6 +11,6 @@ class Hotels extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'name', 'price', 'photo', 'travel_duration'
+        'name', 'price', 'photo', 'travel_duration', 'country_id'
     ];
 }

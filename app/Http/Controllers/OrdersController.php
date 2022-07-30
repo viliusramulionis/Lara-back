@@ -22,12 +22,16 @@ class OrdersController extends Controller
 
         foreach ($orders as $order) {
             $hotel = Hotels::find($order->hotel_id);
-            $country = Countries::find($hotel->country_id);
+            if($hotel->country_id) {
+                $country = Countries::find($hotel->country_id);
+                $order['country_name'] = $country->name;
+            } else {
+                $order['country_name'] = 'Nepriskirta';
+            }
             $order['hotel_name'] = $hotel->name;
             $order['price'] = $hotel->price;
             $order['photo'] = $hotel->photo;
             $order['travel_duration'] = $hotel->travel_duration;
-            $order['country_name'] = $country->name;
             $generatedOrders[] = $order;
         }
 
@@ -59,12 +63,16 @@ class OrdersController extends Controller
 
         foreach ($orders as $order) {
             $hotel = Hotels::find($order->hotel_id);
-            $country = Countries::find($hotel->country_id);
+            if($hotel->country_id) {
+                $country = Countries::find($hotel->country_id);
+                $order['country_name'] = $country->name;
+            } else {
+                $order['country_name'] = 'Nepriskirta';
+            }
             $order['hotel_name'] = $hotel->name;
             $order['price'] = $hotel->price;
             $order['photo'] = $hotel->photo;
             $order['travel_duration'] = $hotel->travel_duration;
-            $order['country_name'] = $country->name;
             $generatedOrders[] = $order;
         }
 
@@ -105,7 +113,7 @@ class OrdersController extends Controller
             ], 500);
     }
 
-    public function approve($id, Request $request)
+    public function status($id, Request $request)
     {
         //Authentification
         if (auth()->user()->role != 0)
@@ -114,9 +122,8 @@ class OrdersController extends Controller
                 'message' => 'Unauthorized'
             ], 401);
 
-        $order = Orders::where('id', $id);
-
-        if ($order->update(['approved', 1]))
+        $order = Orders::find($id);
+        if ($order->update(['approved' => $order->approved === 0 ? 1 : 0]))
             return response()->json([
                 'success' => true,
                 'message' => 'Užsakymas sėkmingai patvirtintas'
